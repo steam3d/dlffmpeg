@@ -10,7 +10,7 @@ import sys
 def dlffmpeg(ffmpegpath=os.getcwd()):
 
     if sys.platform == 'win32':
-        if platform.machine() == 'amd64':
+        if platform.machine() == 'AMD64':
             ver = 'win64'
         else:
             ver = 'win32'
