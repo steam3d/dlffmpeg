@@ -5,6 +5,7 @@ import tempfile
 import shutil
 import platform
 import sys
+import ssl
 
 
 def dlffmpeg(ffmpegpath=os.getcwd()):
@@ -22,12 +23,14 @@ def dlffmpeg(ffmpegpath=os.getcwd()):
         print("For linux try 'apt-get install ffmpeg'")
         return False
 
+    context = ssl._create_unverified_context()
+
     url = 'https://ffmpeg.zeranoe.com/builds/{0}/static/'.format(ver)
     sort = '?C=M&O=D'
     req = Request(url+sort, headers={'User-Agent': 'Mozilla/5.0'})
 
     try:
-        webpage = urlopen(req).read()
+        webpage = urlopen(req,context=context).read()
     except Exception as e:
         print(e)
         return False
@@ -45,7 +48,7 @@ def dlffmpeg(ffmpegpath=os.getcwd()):
         tmpfile = os.path.join(tmpdir, name)
         with open(tmpfile, 'wb') as f:
             try:
-                f.write(urlopen(req).read())
+                f.write(urlopen(req,context=context).read())
             except Exception as e:
                 print(e)
                 return False
