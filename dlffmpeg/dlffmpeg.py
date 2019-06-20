@@ -8,6 +8,21 @@ import sys
 import ssl
 
 
+# Save chmod rules
+class Zip(zipfile.ZipFile):
+    def extract(self, member, path=None, pwd=None):
+        if not isinstance(member, zipfile.ZipInfo):
+            member = self.getinfo(member)
+
+        if path is None:
+            path = os.getcwd()
+
+        ret_val = self._extract_member(member, path, pwd)
+        attr = member.external_attr >> 16
+        os.chmod(ret_val, attr)
+        return ret_val
+
+
 def dlffmpeg(ffmpegpath=os.getcwd()):
 
     if sys.platform == 'win32':
@@ -54,7 +69,7 @@ def dlffmpeg(ffmpegpath=os.getcwd()):
                 return False
 
         if os.path.exists(tmpfile):
-            with zipfile.ZipFile(tmpfile, "r") as zip:
+            with Zip(tmpfile, "r") as zip:
                 for file in zip.namelist():
                     if file.startswith(name[:-4] + '/bin/'):
                         zip.extract(file, tmpdir)
